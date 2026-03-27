@@ -1,0 +1,73 @@
+#include <stdio.h>
+int main() {
+    int n, i, choice;
+    int at[20],bt[20],ct[20],tat[20],wt[20],pt[20];
+    int completed[20],current_time = 0, done = 0;
+    float avgWT = 0, avgTAT = 0;
+    while (1) {
+        printf("\nPriority Scheduling(Non-Preemptive)\n");
+        printf("1. Enter Process Details\n");
+        printf("2. Display Results\n");
+        printf("3. Exit\n");
+        printf("Enter choice: ");
+        scanf("%d", &choice);
+        switch (choice) {
+        case 1:
+            printf("Enter number of processes: ");
+            scanf("%d", &n);
+            for (i = 0; i < n; i++) {
+                printf("\nProcess %d\n", i + 1);
+                printf("Arrival Time: ");
+                scanf("%d", &at[i]);
+                printf("Burst Time: ");
+                scanf("%d", &bt[i]);
+                printf("Priority : ");
+                scanf("%d", &pt[i]);
+                completed[i] = 0;
+            }
+            break;
+        case 2:
+            current_time = 0;
+            done = 0;
+            while (done < n) {
+                int idx = -1, highest_priority = 9999;
+                for (i = 0; i < n; i++) {
+                    if (at[i] <= current_time && completed[i] == 0) {
+                        if (pt[i] < highest_priority) {
+                            highest_priority = pt[i];
+                            idx = i;
+                        }
+                    }
+                }
+                if (idx != -1) {
+                    ct[idx] = current_time + bt[idx];
+                    tat[idx] = ct[idx] - at[idx];
+                    wt[idx] = tat[idx] - bt[idx];
+                    current_time = ct[idx];
+                    completed[idx] = 1;
+                    done++;
+                } else {
+                    current_time++;
+                }
+            }
+            printf("\nPID\tAT\tBT\tPT\tCT\tTAT\tWT\n");
+            for (i = 0; i < n; i++) {
+                printf("%d\t%d\t%d\t%d\t%d\t%d\t%d\n",
+                       i + 1, at[i], bt[i], pt[i],ct[i], tat[i], wt[i]);
+                avgWT += wt[i];
+                avgTAT += tat[i];
+            }
+            avgWT /= n;
+            avgTAT /= n;
+            printf("\nAverage Waiting Time = %.2f", avgWT);
+            printf("\nAverage Turnaround Time = %.2f\n", avgTAT);
+            break;
+        case 3:
+            printf("Exit\n");
+            return 0;
+        default:
+            printf("Invalid choice!\n");
+        }
+    }
+    return 0;
+}
